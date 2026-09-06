@@ -1,0 +1,38 @@
+!pip install streamlit
+import streamlit as st
+import joblib
+import pandas as pd
+
+# Load the trained linear regression model
+# Assuming the model file 'linear_regression.sav' is in the same directory as app.py
+loaded_lr_model = joblib.load('linear_regression.sav')
+
+st.set_page_config(page_title="Sales Prediction App")
+st.title("Linear Regression Model for Sales Prediction")
+st.markdown("This app predicts sales based on advertising spending on TV, Radio, and Newspaper.")
+
+# Sidebar for user input
+st.sidebar.header("Input Advertising Spending")
+
+def user_input_features():
+    tv = st.sidebar.slider('TV Advertising (in thousands)', 0.0, 300.0, 150.0)
+    radio = st.sidebar.slider('Radio Advertising (in thousands)', 0.0, 50.0, 25.0)
+    newspaper = st.sidebar.slider('Newspaper Advertising (in thousands)', 0.0, 110.0, 30.0)
+    data = {'TV': tv,
+            'Radio': radio,
+            'Newspaper': newspaper}
+    features = pd.DataFrame(data, index=[0])
+    return features
+
+input_df = user_input_features()
+
+st.subheader('User Input Features')
+st.write(input_df)
+
+# Make prediction
+prediction = loaded_lr_model.predict(input_df)
+
+st.subheader('Predicted Sales')
+st.write(f"The predicted sales are: **{prediction[0]:.2f}** units")
+
+st.markdown("---<br>Developed by Your Name/Organization", unsafe_allow_html=True)
